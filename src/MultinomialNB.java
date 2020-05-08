@@ -27,9 +27,9 @@ public class MultinomialNB {
 				String line="";
 				Scanner scanner = new Scanner(new File(folder + "/" + file.getName()));
 				// positive probability is initialized with the prior probability
-				double posProbability = FileRead.posDocCount / (FileRead.posDocCount + FileRead.negDocCount); 
+				double posProbability = Math.log(FileRead.posDocCount / (FileRead.posDocCount + FileRead.negDocCount)); 
 				// negative probability is initialized with the prior probability
-				double negProbability = FileRead.negDocCount / (FileRead.posDocCount + FileRead.negDocCount);
+				double negProbability = Math.log(FileRead.negDocCount / (FileRead.posDocCount + FileRead.negDocCount));
 				while(scanner.hasNextLine()) {
 					line = scanner.nextLine();
 					line = line.replaceAll("[^a-zA-Z ]", "");
@@ -44,7 +44,7 @@ public class MultinomialNB {
 				        }else {
 				        	pp = ( 0 + 1 ) / ((double)posTotalCount + (double)vocabulary.size());
 				        }
-				    	posProbability *= pp;
+				    	posProbability += Math.log(pp);
 				    	
 				    	// probability of word in negative class | P(w|neg)
 				    	double pn; 
@@ -53,14 +53,16 @@ public class MultinomialNB {
 				        }else {
 				        	pn = ( 0 + 1 ) / ((double)negTotalCount + (double)vocabulary.size());
 				        }
-				    	negProbability *= pn;
+				    	negProbability += Math.log(pn);
 				    	
 				    	// In order to prevent number overflow
+				    	/*
 				    	double lowerLimit = Math.pow(10, -300);
 						if(posProbability < lowerLimit || negProbability < lowerLimit) {
 							posProbability *= Math.pow(10, 250);
 							negProbability *= Math.pow(10, 250);
 						}
+						*/
 				     }
 					
 

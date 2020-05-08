@@ -17,9 +17,9 @@ public class BinaryNB {
 				String line="";
 				Scanner scanner = new Scanner(new File(folder + "/" + file.getName()));
 				// positive probability is initialized with the prior probability
-				double posProbability = FileRead.posDocCount / (FileRead.posDocCount + FileRead.negDocCount); 
+				double posProbability = Math.log(FileRead.posDocCount / (FileRead.posDocCount + FileRead.negDocCount)); 
 				// negative probability is initialized with the prior probability
-				double negProbability = FileRead.negDocCount / (FileRead.posDocCount + FileRead.negDocCount);
+				double negProbability = Math.log(FileRead.negDocCount / (FileRead.posDocCount + FileRead.negDocCount));
 				while(scanner.hasNextLine()) {
 					line = scanner.nextLine();
 					line = line.replaceAll("[^a-zA-Z ]", "");
@@ -36,7 +36,7 @@ public class BinaryNB {
 				        	pp = ( 0 + 1 ) / 
 				        			(posBinaryWordCount + (double) MultinomialNB.vocabulary.size());
 				        }
-				    	posProbability *= pp;
+				    	posProbability += Math.log(pp);
 				    	
 				    	// probability of word in negative class | P(w|neg)
 				    	double pn; 
@@ -47,14 +47,16 @@ public class BinaryNB {
 				        	pn = ( 0 + 1 ) / 
 				        			(negBinaryWordCount + (double) MultinomialNB.vocabulary.size());
 				        }
-				    	negProbability *= pn;
+				    	negProbability += Math.log(pn);
 				    	
+				    	/*
 				    	// In order to prevent number overflow
 				    	double lowerLimit = Math.pow(10, -200);
 						if(posProbability < lowerLimit || negProbability < lowerLimit) {
 							posProbability *= Math.pow(10, 150);
 							negProbability *= Math.pow(10, 150);
 						}
+						*/
 				     }
 					
 

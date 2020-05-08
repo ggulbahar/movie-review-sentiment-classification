@@ -24,9 +24,9 @@ public class BernoulliNB {
 				String line="";
 				Scanner scanner = new Scanner(new File(folder + "/" + file.getName()));
 				// positive probability is initialized with the prior probability
-				double posProbability = FileRead.posDocCount / (FileRead.posDocCount + FileRead.negDocCount); 
+				double posProbability = Math.log(FileRead.posDocCount / (FileRead.posDocCount + FileRead.negDocCount)); 
 				// negative probability is initialized with the prior probability
-				double negProbability = FileRead.negDocCount / (FileRead.posDocCount + FileRead.negDocCount);
+				double negProbability = Math.log(FileRead.negDocCount / (FileRead.posDocCount + FileRead.negDocCount));
 				while(scanner.hasNextLine()) {
 					line = scanner.nextLine();
 					line = line.replaceAll("[^a-zA-Z ]", "");
@@ -42,22 +42,24 @@ public class BernoulliNB {
 					        }else {
 					        	pp = ( 0 + 1 ) / (FileRead.posDocCount + NUMBER_OF_CLASSES);
 					        }
-					    	posProbability *= pp;
+					    	posProbability += Math.log(pp);
 					    	
 					    	if(BernoulliNB.negWordDocCounts.containsKey(word)) {
 					    		pn = ((double) BernoulliNB.negWordDocCounts.get(word) + 1 ) / (FileRead.negDocCount + NUMBER_OF_CLASSES);
 					        }else {
 					        	pn = ( 0 + 1 ) / (FileRead.negDocCount + NUMBER_OF_CLASSES);
 					        }
-					    	negProbability *= pn;
+					    	negProbability += Math.log(pn);
 					    	documentWords.add(word);
-					    	
+			
+					    	/*
 					    	// In order to prevent number overflow
 					    	double lowerLimit = Math.pow(10, -200);
 							if(posProbability < lowerLimit || negProbability < lowerLimit) {
 								posProbability *= Math.pow(10, 150);
 								negProbability *= Math.pow(10, 150);
 							}
+							*/
 				    	}
 				     }
 				}
@@ -73,7 +75,7 @@ public class BernoulliNB {
 			        }else {
 			        	pp = ( 0 + 1 ) / (FileRead.posDocCount + NUMBER_OF_CLASSES);
 			        }
-			    	posProbability *= (1.0 - pp);
+			    	posProbability += Math.log((1.0 - pp));
 			    	
 			    	// for neg probability
 			    	if(BernoulliNB.negWordDocCounts.containsKey(w)) {
@@ -81,14 +83,8 @@ public class BernoulliNB {
 			        }else {
 			        	pn = ( 0 + 1 ) / (FileRead.negDocCount + NUMBER_OF_CLASSES);
 			        }
-			    	negProbability *= (1 - pn);
+			    	negProbability += Math.log((1 - pn));  	
 			    	
-			    	// In order to prevent number overflow
-			    	double lowerLimit = Math.pow(10, -300);
-					if(posProbability < lowerLimit || negProbability < lowerLimit) {
-						posProbability *= Math.pow(10, 250);
-						negProbability *= Math.pow(10, 250);
-					}
 				}
 				
 				if(posProbability == 0);
